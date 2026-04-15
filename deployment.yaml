@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-website-deployment
+spec:
+  replicas: 2 # This tells K8s to run exactly 2 copies of your app!
+  selector:
+    matchLabels:
+      app: devops-website
+  template:
+    metadata:
+      labels:
+        app: devops-website
+    spec:
+      containers:
+      - name: website-container
+        image: 536461879433.dkr.ecr.us-east-1.amazonaws.com/my-devops-app:latest
+        ports:
+        - containerPort: 80
