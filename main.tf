@@ -6,9 +6,9 @@ terraform {
     }
   }
 
-  # THIS IS THE NEW PERMANENT MEMORY BANK
+  # THIS IS THE PERMANENT MEMORY BANK
   backend "s3" {
-    bucket         = "enterprise-k8s-tfstate-shuja" # <-- REPLACE THIS 
+    bucket         = "YOUR_BUCKET_NAME_HERE" # <-- REPLACE THIS BEFORE SAVING
     key            = "global/s3/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "enterprise-k8s-tf-locks"
@@ -49,6 +49,11 @@ module "eks" {
   control_plane_subnet_ids = module.vpc.public_subnets
 
   enable_cluster_creator_admin_permissions = true
+
+  # --- THE NEW FIREWALL RULES ---
+  cluster_endpoint_public_access       = true
+  cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
+  # ------------------------------
 
   # 3. Create the Worker Node Group
   eks_managed_node_groups = {
