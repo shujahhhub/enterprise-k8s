@@ -8,7 +8,7 @@ terraform {
 
   # THIS IS THE NEW PERMANENT MEMORY BANK
   backend "s3" {
-    bucket         = "YOUR_BUCKET_NAME_HERE" # <-- REPLACE THIS 
+    bucket         = "enterprise-k8s-tfstate-shuja" # <-- REPLACE THIS 
     key            = "global/s3/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "enterprise-k8s-tf-locks"
