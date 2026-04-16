@@ -9,7 +9,7 @@ on:
 # 2. The Environment: Variables the robot needs to know
 env:
   AWS_REGION: us-east-1 
-  EKS_CLUSTER_NAME: devops-k8s-cluster
+  EKS_CLUSTER_NAME: enterprise-k8s-cluster
 
 # 3. The Jobs: The actual step-by-step tasks
 jobs:
