@@ -1,51 +1,21 @@
-name: AWS EKS Deployment Pipeline
+name: Ultimate Pipeline Test
 
-# 1. The Trigger: When does this robot wake up?
+# This tells the robot to wake up every time you push code
 on:
   push:
     branches:
       - main
 
-# 2. The Environment: Variables the robot needs to know
-env:
-  AWS_REGION: us-east-1 
-  EKS_CLUSTER_NAME: enterprise-k8s-cluster
-
-# 3. The Jobs: The actual step-by-step tasks
 jobs:
-  deploy:
-    name: Deploy Infrastructure and App
-    runs-on: ubuntu-latest # GitHub gives us a free Linux server to run this on
+  prove-it-works:
+    runs-on: ubuntu-latest
 
     steps:
-    # Step A: Download your code from the GitHub repository onto the runner
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Print a custom message
+        run: echo "BOOM! The pipeline is alive, listening, and working perfectly!"
 
-    # Step B: Log into your AWS Account (using secure hidden keys)
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
+      - name: Check the server time
+        run: date
 
-    # Step C: Install Terraform on the runner
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-
-    # Step D: Build the Infrastructure (Servers & Cluster)
-    - name: Terraform Init and Apply
-      run: |
-        terraform init
-        terraform apply -auto-approve
-
-    # Step E: Connect to the Kubernetes Cluster
-    - name: Update KubeConfig
-      run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
-
-    # Step F: Deploy the Website
-    - name: Deploy to Kubernetes
-      run: |
-        kubectl apply -f deployment.yaml
-        kubectl apply -f service.yaml 
+      - name: List the server directories
+        run: ls -la
