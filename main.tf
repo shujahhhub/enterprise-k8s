@@ -8,7 +8,7 @@ terraform {
 
   # THIS IS THE PERMANENT MEMORY BANK
   backend "s3" {
-    bucket         = "enterprise-k8s-tfstate-shuja" # <-- REPLACE THIS BEFORE SAVING
+    bucket         = "enterprise-k8s-tfstate-shuja" 
     key            = "global/s3/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "enterprise-k8s-tf-locks"
@@ -37,7 +37,24 @@ module "vpc" {
 }
 
 # 2. Build the Kubernetes Cluster (EKS)
-# --- THE LAPTOP SPARE KEY ---
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 20.0"
+
+  cluster_name    = "enterprise-k8s-cluster"
+  cluster_version = "1.30"
+
+  vpc_id                   = module.vpc.vpc_id
+  subnet_ids               = module.vpc.private_subnets
+  control_plane_subnet_ids = module.vpc.public_subnets
+
+  enable_cluster_creator_admin_permissions = true
+  
+  # --- THE FIREWALL RULES ---
+  cluster_endpoint_public_access       = true
+  cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
+
+  # --- THE LAPTOP SPARE KEY ---
   access_entries = {
     my_laptop = {
       principal_arn = "arn:aws:iam::536461879433:root"
@@ -51,19 +68,13 @@ module "vpc" {
       }
     }
   }
-  # ------------------------------
-
-  # --- THE NEW FIREWALL RULES ---
-  cluster_endpoint_public_access       = true
-  cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
-  # ------------------------------
 
   # 3. Create the Worker Node Group
   eks_managed_node_groups = {
     enterprise_nodes = {
-      min_size     = 1
-      max_size     = 3
-      desired_size = 2 
+      min_size       = 1
+      max_size       = 3
+      desired_size   = 2 
       instance_types = ["t3.medium"] 
     }
   }
